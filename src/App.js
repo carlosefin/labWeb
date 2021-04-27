@@ -1,11 +1,22 @@
+import React from "react";
 import './App.css';
-import Contacts from './Components/Contacts/Contacts';
+import Auth from './Components/Auth/Auth'
+import { AuthProvider } from './Contexts/AuthContext'
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import ProtectedRoute from "./Helpers/ProtectedRoute";
+import ToDo from './Components/ToDo/ToDo'
 
-//this is the dev branch
-function App() {
+const App = () => {
   return (
     <div className="App">
-      <Contacts/>
+      <Router>
+        <AuthProvider>
+          <Switch>
+          <ProtectedRoute exact path="/" component={ToDo} />
+            <Route path="/login" component={Auth} />
+          </Switch>
+        </AuthProvider>
+      </Router>
     </div>
   );
 }

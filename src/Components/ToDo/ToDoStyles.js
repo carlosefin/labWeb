@@ -8,6 +8,28 @@ const useStyles = makeStyles((theme) => ({
       minWidth: 1000
     },
 
+    fieldContainer: {
+        paddingBottom: '3rem'
+    },
+
+    modalField: {
+        padding: '1rem'
+    },
+
+    field: {
+        maxHeight: 10,
+        width: 200
+    },
+
+    modal: {
+        paddingTop: '1rem',
+        paddingBottom: '1rem',
+        marginTop: '14rem',
+        marginLeft: '28rem',
+        width: 600,
+        height: 300
+    },
+
     bold: {
         fontWeight: 'bold',
         fontSize: 18
@@ -33,6 +55,14 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
         backgroundColor: '#39393b',
         marginBottom: '3rem'
+    },
+
+    buttonLogout: {
+        height: 40,
+        width: 100,
+        fontSize: 16,
+        color: 'white',
+        backgroundColor: 'red',
     },
 
     buttonEdit:{
