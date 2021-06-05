@@ -3,6 +3,8 @@ import { TextField, Grid } from '@material-ui/core';
 import { Cake, AccountCircle, Phone } from '@material-ui/icons';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
+
+//componente con todo lo visual de la pantalla de registro
 const Register = (props) => {
     return (
         <Fragment>

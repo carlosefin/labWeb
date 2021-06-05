@@ -10,8 +10,10 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true);
+    //Sets the state for the notification component.
     const [notify, setNotify] = useState({isOpen: false, message: '', type: ''});
 
+    //function for user creation.
     const signUp = data => {
         return auth.createUserWithEmailAndPassword(data.email, data.password)
             .then(cred => {
@@ -51,6 +53,7 @@ export const AuthProvider = ({ children }) => {
             })
     }
 
+    //function for user login
     const login = data => {
         return auth.signInWithEmailAndPassword(data.email, data.password)
             .then(cred => console.log("Login succesfully"))
@@ -64,11 +67,10 @@ export const AuthProvider = ({ children }) => {
             })
     }
 
+    //Function for user logout
     const logout = () => {
         return auth.signOut();
     }
-
-
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {

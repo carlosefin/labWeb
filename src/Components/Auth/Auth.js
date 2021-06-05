@@ -8,10 +8,12 @@ import Register from './Register/Register';
 
 export const AuthContext = React.createContext();
 
+//componente con toda la funcionalidad y conditional renderig del registro
 export const SignIn = () => {
 
   const history = useHistory();
 
+  //saves the satate of all the info needed to register
   const [data, setData] = useState({
     email: '',
     name: '',
@@ -35,27 +37,32 @@ export const SignIn = () => {
 
   const { signUp, login } = useAuth();
 
+  //after the account creation user is sent to the main page of the app.
   const handleSuccessfulAuth = () => {
     history.push("/");
   }
 
   const classes = useStyles();
 
+  //Everytime a field changes the new state is saved on data
   const handleChange = (e) => {
     e.preventDefault();
     setData({ ...data, [e.target.name]: e.target.value })
   };
 
+  //function to conditionally render the register content
   const registerContent = (e) => {
     e.preventDefault();
     setRegisterB({ showUser: true })
   }
 
+  //Function to conditionally render the login content
   const loginContent = (e) => {
     e.preventDefault();
     setRegisterB({ showUser: false })
   }
 
+  //Executed when clicking on the register button, creates account on firestore
   const onRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -67,6 +74,7 @@ export const SignIn = () => {
     setLoading(false);
   }
 
+  //Excecuted when clicking on login button, logs in to an account registered in firestore.
   const onLoginSubmit = async (e) => {
     e.preventDefault();
     try {

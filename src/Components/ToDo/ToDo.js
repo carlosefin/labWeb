@@ -1,5 +1,4 @@
 import { Button, Grid, Table, TableBody, TableContainer, TableHead, TableRow, Paper, withStyles, Modal, TextField} from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
 import React, {useState} from 'react';
 import useStyles from './ToDoStyles';
 import {db} from '../../Utilities/Firebase'
