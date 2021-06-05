@@ -24,14 +24,12 @@ export const AuthProvider = ({ children }) => {
                     Country: data.country,
                     Gender: data.gender,
                     Name: data.name,
-                    LastName: data.lastName,
-                    //This are default values
-                    BackgroundImage: 'https://firebasestorage.googleapis.com/v0/b/modus-main-app.appspot.com/o/images%2Fbackground_images%2FdefaultBackground.jpeg?alt=media&token=80e9fb4f-222a-4091-bf88-719a80f16a03'
+                    LastName: data.lastName
                 })
                     .then(() => 
                     setNotify({
                         isOpen: true,
-                        message: 'Se creo el usuario correctamen',
+                        message: 'Se creo el usuario correctamente',
                         type: 'success'
                     }))
                     .catch(error => {

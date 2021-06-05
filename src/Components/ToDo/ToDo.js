@@ -1,13 +1,13 @@
 import { Button, Grid, Table, TableBody, TableContainer, TableHead, TableRow, Paper, withStyles, Modal, TextField} from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
-import React from 'react';
+import React, {useState} from 'react';
 import useStyles from './ToDoStyles';
+import {db} from '../../Utilities/Firebase'
 import { useAuth } from '../../Contexts/AuthContext'
-import carlos from '../../static/images/avatar/fotoCarlos-min.png'
-import maluma from '../../static/images/avatar/maluma-min.png'
-import satoshi from '../../static/images/avatar/satoshi-min.jpg'
 import MuiTableCell from "@material-ui/core/TableCell";
 import { useHistory } from 'react-router-dom'
+import Notification from '../../Helpers/Notification';
+import { useEffect } from 'react';
 
 const TableCell = withStyles({
     root: {
@@ -17,22 +17,50 @@ const TableCell = withStyles({
 
 const ToDo = () => {
     const history = useHistory();
+
+    const [notify, setNotify] = useState({isOpen: false, message: '', type: ''});
     
     const classes = useStyles();
 
-    const  createData = (category, activity, id) => {
+    /* const  createData = (category, activity, id) => {
         return { category, activity, id};
-      }
+      } */
 
     let id_counter = 0
       
-    let rows = [
+    /* let rows = [
         createData('none', 'una actividad', id_counter),
-    ];
+        createData('none', 'una actividad', id_counter),
+    ]; */
+
+    const [task, setTask] = useState({
+        category: '',
+        activity: '',
+    });
 
     const { currentUser, logout } = useAuth();
 
     let displayTasks = null;
+
+    const [tasks, setTasks] = useState([]);
+
+    const [open, setOpen] = React.useState(false);
+
+    useEffect(() => {
+        getTasks();
+    }, [])
+
+    const getTasks = () => {
+        db.collection(currentUser.uid).onSnapshot(function(querySnapshot) {
+            setTasks(
+                querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    category: doc.data().category,
+                    activity: doc.data().activity
+                }))
+            )
+        })
+    }
 
     const logoutHandler = async () => {
         try {
@@ -43,12 +71,32 @@ const ToDo = () => {
         }
     }
 
-    const removeActivity = (identifier) => {
-
+    const saveTask = () => {
+        setOpen(false)
+        db.collection(currentUser.uid).add({
+        
+            category: task.category,
+            activity: task.activity
+               
+        })
+          .then(() => {
+              console.log('info saved in cloud')
+              setNotify({
+              isOpen: true,
+              message: 'task saved in the cloud',
+              type: 'success'
+            }) 
+          })
     }
 
-    const [modalStyle] = React.useState();
-    const [open, setOpen] = React.useState(false);
+    const handleChange = (e) => {
+        e.preventDefault();
+        setTask({ ...task, [e.target.name]: e.target.value })
+    };
+
+    const removeTask = (id) => {
+        db.collection(currentUser.uid).doc(id).delete();
+    }
   
     const handleOpen = () => {
       setOpen(true);
@@ -64,14 +112,27 @@ const ToDo = () => {
         <Grid className = {classes.fieldContainer} container item justify = 'center' alignItems = 'center' direction = 'row'>
           <Grid item className = {classes.modalField}>
               <p>Category:</p>
-              <TextField className = {classes.field} variant = 'outlined' size="small"/>
+              <TextField 
+                className = {classes.field}
+                name = 'category'
+                onChange = {handleChange}
+                variant = 'outlined' 
+                size="small"
+              />
           </Grid>
           <Grid item className = {classes.modalField}>
               <p>Activity:</p>
-              <TextField className = {classes.field} variant = 'outlined' size="small"/>
+              <TextField 
+                className = {classes.field}
+                name = 'activity'
+                onChange = {handleChange}
+                variant = 'outlined' 
+                size="small"
+              />
           </Grid>
         </Grid>
         <Button
+        onClick = {saveTask}
         variant="contained"
         color="primary"
         type="submit"
@@ -81,7 +142,7 @@ const ToDo = () => {
       </Grid>
     );
 
-    if(rows.length < 1){
+    if(tasks.length < 1){
         displayTasks = (
             <Grid component={Paper} className = {classes.root} container item xs = {12} justify='left' alignItems= 'flex-start' direction = 'column'>
                 <h1 className = {classes.header}>All done, have some rest uwu</h1>
@@ -100,28 +161,22 @@ const ToDo = () => {
                         </TableRow>
                         </TableHead>
                         <TableBody>
-                        {rows.map((row) => (
+                        {tasks.map((row) => (
                             <TableRow key={row.id}>
-                            <TableCell style = {{borderBottom: '2px solid black'}} component="th" scope="row">
+                                <TableCell style = {{borderBottom: '2px solid black'}} component="th" scope="row">
                                 {row.category}
-                            </TableCell>
-                            <TableCell style = {{borderBottom: '2px solid black'}} >{row.activity}</TableCell>
-                            <TableCell style = {{borderBottom: '2px solid black'}} align = 'right'>
-                            <Button
-                                className = {classes.buttonEdit}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                            >Editar
-                            </Button>
-                            <Button
-                                className = {classes.buttonDel}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                            >Eliminar
-                            </Button>
-                            </TableCell>
+                                </TableCell>
+                                <TableCell style = {{borderBottom: '2px solid black'}} >{row.activity}</TableCell>
+                                <TableCell style = {{borderBottom: '2px solid black'}} align = 'right'>
+                                <Button
+                                    className = {classes.buttonDel}
+                                    onClick = {() => removeTask(row.id)}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                >Eliminar
+                                </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -163,6 +218,10 @@ const ToDo = () => {
                 {displayTasks}
             </Grid>
         </Grid>
+        <Notification 
+            notify = {notify}
+            setNotify = {setNotify}
+        />
         <Modal
             open={open}
             onClose={handleClose}
